@@ -1,24 +1,14 @@
 const path = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
-    mode: 'development',
     entry: {
-        index: './src/index.js'
+        app: './src/index.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
-        filename: '[name].[chunkhash].js',
-        chunkFilename: '[name].[chunkhash].js'
+        publicPath: '/'
     },
-    devServer: {
-        contentBase: './dist'
-    },
-
-    devtool: 'source-map',
     resolve: {
         modules: [path.resolve(__dirname, 'node_modules')],
         mainFields: ['jsnext:main', 'main']
@@ -29,10 +19,15 @@ module.exports = {
         },
         splitChunks: {
             cacheGroups: {
-                vendor: {
-                    test: /node_modules\/(.*)\.js/,
-                    name: 'vendor',
+                module: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendors",
                     chunks: "all"
+                },
+                commons: {
+                    name: "commons",
+                    chunks: "all",
+                    minChunks: 2
                 }
             }
         }
@@ -42,17 +37,9 @@ module.exports = {
             {
                 test: /\.js$/,
                 use: [
-                    'babel-loader'
+                    'babel-loader?cacheDirectory'
                 ],
                 include: path.resolve(__dirname, 'src')
-            },
-            {
-                test: /\.(css|scss|sass)$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'sass-loader'
-                ]
             },
             {
                 test: /\.(gif|jpg|png|ico)$/,
@@ -75,13 +62,8 @@ module.exports = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: './src/index.html',
-        }),
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[contenthash].css',
-            chunkFilename: 'css/[name].[contenthash].css'
-        }),
+        })
     ],
 }

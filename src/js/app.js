@@ -5,5 +5,6 @@ class App {
 
     }
 }
+var x = 1;
 
 export default App;
